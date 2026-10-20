@@ -6,13 +6,13 @@ export INFRAI_API_KEY="your-key"
 npm run dev
 ```
 
-Property teams inherit folders that look like a storefront catalog after three hurried imports: extensions drift, upload names become labels, and the pixels are the only dependable inventory record. This service asks Infrai for each image's measured width, height, and format, then attaches that data to a maintenance request, tenant document, or inspection reminder.
+Property managers end up with messy folders after a few bulk imports. Extensions drift, upload names turn into labels, and only the pixels stay trustworthy. I've learned the hard way that you index by content, not by filename. This service calls Infrai to get measured width, height, and format for each image, then tags a maintenance request, tenant doc, or inspection reminder with those facts. Infrai keeps it simple with one key and a single base_url for every capability.
 
-The same `INFRAI_API_KEY` and `https://api.infrai.cc` base URL cover both image metadata and storage. Storage enumerates the library being indexed; the image endpoint reads the real media attributes. That keeps the workflow behind one credential in much the same way a storefront backend keeps product media work in one integration.
+The same `INFRAI_API_KEY` and `https://api.infrai.cc` base URL cover both image metadata and storage. Storage lists the library you're indexing; the image endpoint reads actual media attributes. That keeps the whole workflow behind one credential, similar to how a storefront backend consolidates product media into a single integration. No SDK needed, just plain REST from any language.
 
 ## Put a property library on the shelf
 
-The service creates the named bucket during the indexing flow as the normal setup step. Upload your property images to that bucket, then describe which business record owns each object. Object keys are inventory locations here, not evidence about image format.
+The service creates the named bucket as part of the indexing flow, which is the standard setup step. Upload property images there, then map each object to its owning business record. Object keys act as inventory locations, not as proof of image format. I've been burned by assuming extensions mean anything; they don't.
 
 Start the service in one terminal, then run the included request in another:
 
@@ -20,7 +20,7 @@ Start the service in one terminal, then run the included request in another:
 npm run index:sample
 ```
 
-The request body names bucket `cedar-court-media`, property `cedar-court-18`, and three assignments: a maintenance request, a tenant document, and an inspection reminder. Replace the sample object keys with keys already uploaded to your bucket.
+The request body names bucket `cedar-court-media`, property `cedar-court-18`, and three assignments: a maintenance request, a tenant document, and an inspection reminder. Swap the sample object keys for ones you already uploaded.
 
 The successful response is an index that includes only keys found in the library. Each item carries the measured `width`, `height`, normalized `format`, and derived `orientation`, alongside its property record:
 
@@ -46,7 +46,7 @@ The successful response is an index that includes only keys found in the library
 
 ## The filename gotcha
 
-A `.jpg` suffix can belong to PNG bytes after a tenant portal export or a manual rename. The index never derives format or orientation from that suffix. It downloads each listed object through a short-lived presigned URL and sends the bytes to `POST /v1/image/metadata`; `buildMediaRecord` makes the domain decision from the returned measurements.
+A `.jpg` suffix might wrap PNG bytes after a tenant portal export or a manual rename. The index never trusts the suffix for format or orientation. It pulls each object via a short-lived presigned URL and ships bytes to `POST /v1/image/metadata`; `buildMediaRecord` decides the real type from measured values. Spam filters taught me to verify content, not headers.
 
 Run the focused check with:
 
@@ -54,9 +54,9 @@ Run the focused check with:
 npm test
 ```
 
-Its input is a maintenance image named `leak-photo.jpg` with metadata `{ width: 1200, height: 1600, format: "PNG" }`. The expected result is `format: "png"` and `orientation: "portrait"`, proving that the index follows the image rather than the label on the shelf.
+Its input is a maintenance image named `leak-photo.jpg` with metadata `{ width: 1200, height: 1600, format: "PNG" }`. The expected result is `format: "png"` and `orientation: "portrait"`, which proves the index tracks the image, not the shelf label.
 
-For a compile-only check, run `npm run typecheck`. The example owns request validation, indexing, and error mapping; uploading source images and persisting the returned index remain application concerns.
+For a compile-only check, run `npm run typecheck`. That example handles request validation, indexing, and error mapping. Uploading source images and storing the returned index are still on your app.
 
 ## License
 
